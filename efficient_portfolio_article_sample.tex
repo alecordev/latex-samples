@@ -1,0 +1,391 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{listings}
+\usepackage{times} % For using the Times New Roman Font
+\usepackage{graphicx} % for graphics and image files
+%\usepackage{extsizes} % Allows for additional font sizes
+\usepackage[top=2in, bottom=1.5in, left=1in, right=1in]{geometry} % for specifying the margins
+\usepackage{lastpage} % To be able to have the last page.
+\DeclareMathSizes{12}{20}{14}{10}  % For size 12 text - Math sizes \DeclareMathSizes{ds}{ts}{ss}{sss}, where ds is the display size, ts is the text size, etc. The values you input are assumed to be point (pt) size.
+
+\usepackage{fancyhdr} % Package to have a lot of control over the header and footer of the document.
+\pagestyle{fancyplain}
+% Fancy code to add a few features
+\fancyhead{}
+\fancyfoot{}
+\lhead{Some Name}
+\rhead{\today}
+%\rfoot{\thepage}
+\rfoot{\thepage\ of \pageref{LastPage}}
+% End of fancy code
+
+%%
+% Information on style values: http://www.artofproblemsolving.com/Wiki/index.php/LaTeX:Layout
+\oddsidemargin=.15in
+\evensidemargin=.15in
+\textwidth=6in
+\topmargin=-0.75in % 1 inch is added to this value.
+\textheight=9.4in
+\parindent=0in
+\footskip=1in
+%%
+\linespread{1.3}
+
+\begin{document}
+
+\title{Ef{}f{}icient Frontier and Ef{}f{}icient Portfolio}
+\author{Some Name}
+\date{Some Date}
+\maketitle
+
+\newpage
+
+\tableofcontents
+
+\begin{abstract}
+This document is a compendium of different sources on material related to Efficient Frontier, Efficient Portfolio, CAPM and related calculations and information.
+\end{abstract}
+
+\section{Calculating the Efficient Frontier: Part 1}
+
+The concept of  an efficient frontier” was developed by Harry Markowitz in the 1950s.  The efficient frontier shows us the minimum risk (i.e. standard deviation) that can be achieved at each level of expected return for a given set of risky securities.
+
+Of course, to calculate the efficient frontier, we need to have an estimate of the expected returns and the covariance matrix for the set of risky securities which will used to build the optimal portfolio.  These parameters are difficult (impossible) to forecast, and the optimal portfolio calculation is extremely sensitive to these parameters.  For this reason, an efficient frontier based portfolio is difficult to successfully implement in practice.  However, a familiarity with the concept is still very useful and will help to develop intuition about diversification and the relationship between risk and return.
+
+\subsection{Calculating the Efficient Frontier}
+
+In this post, I’ll demonstrate how to calculate and plot the efficient frontier using the expected returns and covariance matrix for a set of securities.
+
+In a future post, I’ll demonstrate how to calculate the security weights for various points on this efficient frontier using the two-fund separation theorem.
+
+Calculations
+
+In order to calculate the efficient frontier using n assets, we need two inputs.  First, we need the expected returns of each asset.  The vector of expected returns will be designated $\bar{\mathbf{z}}$.  The second input is the variance-covariance matrix for the n assets.  This covariance matrix will be designated as .  We also need a unity vector ($\bar{\mathbf{1}}$) with the same length as the vector $\bar{\mathbf{z}}$.
+
+Once we have this information, we can run the following calculations using a matrix based mathematical program such as Octave or Matlab.\\
+\begin{center}
+$\mathbf{{1}'S^{-1}1}>0$\\
+~\\
+$\mathbf{{1}'S^{-1}\bar{z}}$\\
+~\\
+$\mathbf{{\bar{z}}'S^{-1}\bar{z}}$\\
+~\\
+$\Delta =AC-B^{2}>0$
+~\\
+\end{center}
+
+Using these values, the variance ($\sigma^2$) at each level of expected return ($\mu$) is given by this equation:
+
+$\sigma^2=\frac{A\mu^2-2B\mu+C}{\Delta}$
+
+
+You can see from the equation, that the efficient frontier is a parabola in mean-variance space.
+
+Using the standard deviation ($\sigma$) rather than the variance, we have:
+
+$\sigma=\sqrt{\frac{A\mu^2-2B\mu+C}{\Delta}}$
+
+Example using Octave Script
+
+As an example, lets consider four securities, A,B,C and D, with expected returns of 14\%, 12\%, 15\%, and 7\%.  The expected return vector is:
+
+$\mathbf{\bar{z}}=\begin{bmatrix} 14\\ 12\\ 15\\ 7 \end{bmatrix}$\\
+
+
+The covariance matrix for our example is shown below.  In practice, the historical covariance matrix can be calculated by reading the historical returns into Octave or Matlab and using the cov(X) command. Note that the diagonal of the matrix is the variance of our four securities.  So, if we take the square root of the diagonal, we can calculate the standard deviation of each asset (13.6\%, 14\%, 20.27\%, and 5\%).\\
+
+$\mathbf{S}=\begin{bmatrix} 185& 86.5& 80& 20\\ 86.5& 196& 76& 13.5\\ 80& 76& 411& -19\\ 20& 13.5& -19& 25 \end{bmatrix}$
+
+The example script for computing the efficient frontier from these inputs is shown at the end of this post.  It can be modified for any number of assets by updating the expected return vector and the covariance matrix.
+
+The plot of the efficient frontier for our four assets is shown here:
+
+%\includegraphics[scale=0.5]{efffront4assets} % Just need to write the name of the file, no extension
+
+Derivation and References
+
+Deriving the approach I have shown is beyond the scope of this post.  However, for those who want to dive into the linear algebra, there are several excellent examples available online.
+
+Derivation of Mean-Variance Frontier Equation using the Lagrangian (The Appendix B result is identical to what I show above, but the notation is a little different)
+http://www.hss.caltech.edu/~pbs/bem103/JiangWangPT.pdf
+Old school derivation by a young professor who later went on to win a Nobel prize
+http://dspace.mit.edu/bitstream/handle/1721.1/46832/analyticderivati00mert.pdf?sequence=1
+
+Octave/Matlab Code:
+
+This script will also work in Matlab, but I’ve chosen to use Octave since it is opensource and available for free.
+
+\lstset{language=Matlab}
+\begin{lstlisting}[frame=single]
+% Mean Variance Optimizer
+ 
+% S is matrix of security covariances
+S = [185 86.5 80 20; 86.5 196 76 13.5; 80 76 411 -19; 20 13.5 -19 25]
+ 
+% Vector of security expected returns
+zbar = [14; 12; 15; 7]
+ 
+% Unity vector..must have same length as zbar
+unity = ones(length(zbar),1)
+ 
+% Vector of security standard deviations
+stdevs = sqrt(diag(S))
+ 
+% Calculate Efficient Frontier
+A = unity'*S^-1*unity
+B = unity'*S^-1*zbar
+C = zbar'*S^-1*zbar
+D = A*C-B^2
+ 
+% Efficient Frontier
+mu = (1:300)/10;
+ 
+% Plot Efficient Frontier
+minvar = ((A*mu.^2)-2*B*mu+C)/D;
+minstd = sqrt(minvar);
+ 
+plot(minstd,mu,stdevs,zbar,'*')
+title('Efficient Frontier with Individual Securities','fontsize',18)
+ylabel('Expected Return (%)','fontsize',18)
+xlabel('Standard Deviation (%)','fontsize',18)% Mean Variance Optimizer
+ 
+% S is matrix of security covariances
+S = [185 86.5 80 20; 86.5 196 76 13.5; 80 76 411 -19; 20 13.5 -19 25]
+ 
+% Vector of security expected returns
+zbar = [14; 12; 15; 7]
+ 
+% Unity vector..must have same length as zbar
+unity = ones(length(zbar),1)
+ 
+% Vector of security standard deviations
+stdevs = sqrt(diag(S))
+ 
+% Calculate Efficient Frontier
+A = unity'*S^-1*unity
+B = unity'*S^-1*zbar
+C = zbar'*S^-1*zbar
+D = A*C-B^2
+ 
+% Efficient Frontier
+mu = (1:300)/10;
+ 
+% Plot Efficient Frontier
+minvar = ((A*mu.^2)-2*B*mu+C)/D;
+minstd = sqrt(minvar);
+ 
+plot(minstd,mu,stdevs,zbar,'*')
+title('Efficient Frontier with Individual Securities','fontsize',18)
+ylabel('Expected Return (%)','fontsize',18)
+xlabel('Standard Deviation (%)','fontsize',18)
+\end{lstlisting}
+
+
+
+\section{Calculating the Efficient Frontier: Part 2}
+
+Previously: http://www.calculatinginvestor.com/2011/06/07/efficient-frontier-1/
+
+Here,  I extend the previous example and show how to use Octave or Matlab to calculate the portfolio weights for each of the various risky assets for any point on the efficient frontier.
+
+In my next post, I’ll conclude this series on the efficient frontier by adding a risk free asset,  showing the calculation for the tangency portfolio, and demonstrating how this creates a new frontier.
+
+\subsection{Calculating the Weights for Key Points on the Efficient Frontier}
+
+We can calculate the weights for any point on the efficient frontier once we know the weights for any two points on the efficient frontier.
+
+Two easy points to calculate are the global minimum variance portfolio and the tangency portfolio for the case where the risk free rate is assumed to be zero.
+
+\subsubsection{Global Minimum Variance Portfolio}
+A point of particular interest on the efficient frontier is the “global minimum variance portfolio”.  This portfolio is the point on the efficient frontier which has the minimum variance or standard deviation.
+
+We can solve for the mean and variance of the global minimum variance portfolio by setting the derivative of the equation for the variance to zero and solving for $\mu$ .  The equations for calculating the A,B,C and $\Delta$ values are given in the previous post.
+
+$\sigma^2=\frac{A\mu^2-2B\mu+C}{\Delta}$\\
+
+Setting the derivative with respect to $\mu$ to zero gives:
+
+$0=\frac{2A\mu-2B}{\Delta}$\\
+
+Running through all the algebra gives:
+
+$\mu_{g}=\frac{B}{A}$\\
+
+$\sigma^{2}_{g}=\frac{1}{A}$\\
+
+Finally, the portfolio weights for the global minimum variance portfolio are given by:
+
+$\mathbf{w_{g}}=\frac{\mathbf{S^{-1}1}}{A}$\\
+
+\subsubsection{Calculating a Second Point on Efficient Frontier (Tangency Portfolio with R=0\%)}
+
+We need two points on the efficient frontier to calculate any other point.  We have the global minimum variance portfolio as a first point, and a second easy point to calculate is the tangency portfolio for the case where the risk-free rate is set to zero.
+
+The equations for the expected return, standard deviations, and weights for this portfolio are given below:
+
+$\mathbf{w_{d}}=\frac{\mathbf{S^{-1}\bar{z}}}{B}$\\
+
+$\mu_{d}=\mathbf{w_{d}^{'}\bar{z}}$\\
+
+$\sigma_{d}^{2}=\mathbf{w_{d}^{'}Sw_d}$\\
+
+\subsection{The Two-Fund Separation Theorem}
+
+The two fund separation theorem states that all minimum variance portfolios on the efficient frontier  are combinations of only two distinct portfolios.  So, any two points on the mean variance frontier will span the set.
+
+To calculate any point on the frontier, we can use the minimum variance portfolio and the tangency portfolio when R=0, but as a first step we need to calculate two intermediate values using the target expected return or $\mu$:
+
+$\lambda=\frac{C-\mu B}{\Delta}$\\
+
+$\gamma=\frac{\mu A-B}{\Delta}$\\
+
+With these values, and the portfolio weights for the two portfolios calculated above, we can find the weights for any point on the efficient frontier.
+
+$\mathbf{w^{*}}=\left ( \lambda A \right )\mathbf{w_{g}} + \left (\gamma B \right )\mathbf{w_d}$\\
+
+\subsection{Portfolio Weights Example}
+As an example, we can use the four assets which I used for the example in the previous post.  As a reminder, the expected returns and covariance matrix for these assets are shown below:
+
+$\mathbf{\bar{z}}=\begin{bmatrix} 14\\ 12\\ 15\\ 7 \end{bmatrix}$\\
+
+$\mathbf{S}=\begin{bmatrix} 185& 86.5& 80& 20\\ 86.5& 196& 76& 13.5\\ 80& 76& 411& -19\\ 20& 13.5& -19& 25 \end{bmatrix}$\\
+
+Using these assets, we can use the equations shown above to calculate the portfolio weights for the two reference portfolios, and we can then use these two portfolios to calculate portfolio weights for any point on the efficient frontier.
+
+\subsubsection{Global Minimum Variance Portfolio}
+The equations presented above are implemented in an Octave script, and the portfolio weights, standard deviation, and expected return for the Global Minimum Variance Portfolio are shown below.  Note that a negative portfolio weight indicates a short position in that security.
+
+$\mathbf{w_{g}}=\begin{bmatrix} -0.0399\\ 0.0223\\ 0.0966\\ 0.9210 \end{bmatrix}$\\
+
+$\mu_{g}=7.60\%$\\
+
+$\sigma^{2}_{g}=20.69$\\
+
+$\sigma_{g}=4.55\%$\\
+
+Note that this standard deviation is the minimum standard deviation for any point on the efficient frontier.\\
+
+\textbf{Tangency Portfolio when R=0:}\\
+The portfolio weights, standard deviation, and expected return for the tangency portfolio when the risk free rate (R) is assumed to be zero are shown here.
+
+$\mathbf{w_{d}}=\begin{bmatrix} 0.0486\\ 0.0451\\ 0.1180\\ 0.7883 \end{bmatrix}$\\
+
+$\mu_{d}=8.51\%$\\
+
+$\sigma^{2}_{d}=23.16$\\
+
+$\sigma_{d}=4.81\%$\\
+
+\textbf{Calculating Portfolio Weights for an Arbitrary Expected Return:}\\
+For this example, we will assume that our target portfolio return is 14\%.
+
+Using this target return, the target portfolio weights can be calculated. Again, remember that a negative portfolio weight indicates a short position in that security.
+
+$\mathbf{w^{*}}=\begin{bmatrix} 0.5857\\ 0.1836\\ 0.2477\\ -0.0171 \end{bmatrix}$\\
+
+$\mu^{*}=14.00\%$\\
+
+$\sigma_{*}^{2}=143.72$\\
+
+$\sigma^{*}=11.99\%$\\
+
+\textbf{Plot of Efficient Frontier with Key Points:}
+~\\
+
+%\includegraphics[scale=0.5]{frontierwithkeypoints} % Just need to write the name of the file, no extension
+
+\subsubsection{Octave/Matlab Code}
+
+The script below can be run in Matlab or Octave to calculate, plot, and determine portfolio weights for any point on the efficient frontier.\\
+By updating the expected returns ("zbar") and covariance matrix ("S"), the script can be used to compute and plot the efficient frontier for any desired set of assets.  It will also calculate the portfolio weights for a point on the efficient frontier with a specified target return ("mu\_tar").  The portfolio weights will be returned in the variable "w\_s".
+
+\lstset{language=Matlab}
+\begin{lstlisting}[frame=single]
+Matlab code.
+\end{lstlisting}
+
+\section{Calculating the Efficient Frontier: Part 3}
+\subsection{Calculating the Efficient Frontier with a Risk-Free Asset}
+So, I’ve been feeling a little bit bogged down on this efficient frontier topic, and I’m anxious to wrap things up with this post and move on to something more original!
+
+In the previous two posts, I have demonstrated how to calculate the efficient frontier for any number of risky assets, and I’ve shown how to calculate the portfolio weights for each point on the efficient frontier.
+
+In this post, I will conclude this series on the efficient frontier (finally!) by demonstrating how the frontier changes with the addition of a risk-free asset.
+
+An example Octave script is provided for calculating and plotting the efficient frontier, capital allocation line, and tangency portfolio.
+
+\subsection{Tangency Portfolio with a Risk-Free Asset w/return R}
+The tangency portfolio is the intercept point if we draw a tangent line from the risk-free rate of return (on the y-axis) to the efficient frontier for risky assets. 
+
+The equations used to calculate the portfolio weights, expected return, and variance for the tangency portfolio are shown in this section.
+
+The variables used in these equations are described in more detail in the previous posts.  However, to review briefly, $\mathbf{\bar{z}}$  is the vector of expected returns for the risky assets, and $\mathbf{S}$ is the covariance matrix for the returns of these assets.  The values for A, B, C, and $\Delta$ are intermediate values calculated using the portfolio statistics and the equations for these values are shown in my initial post on this topic. The value R is the return on the risk-free asset.  The value $\mathbf{w_{t}}$ is a vector showing the weight of each asset (weights sum to 1) in the tangency portfolio, and $\bar{Z_{t}}$ and $\sigma_{t}^{2}$ are the expected return and variance of the tangency portfolio.
+
+$\mathbf{w_{t}}=\frac{\mathbf{S^{-1}}\left ( \mathbf{\bar{z}}-R \mathbf{1}\right )}{B-AR}$\\
+
+$\bar{Z_{t}}=\mathbf{w_{t}^{'}\bar{z}}=\frac{C-BR}{B-AR}$\\
+
+$\sigma _{t}^{2}=\mathbf{w_{t}^{'}Sw_{t}}=\frac{C-2RB+R^{2}A}{\left ( B-AR \right )^{2}}$\\
+
+\subsection{Calculating a Point on the Capital Allocation Line}
+The Capital Allocation Line or CAL is the tangent line from the risk-free rate of return (on the y-axis) to the efficient frontier for risky assets. The points on this line represent the highest expected return we can get at a given level of risk when we have access to a risk-free asset. 
+
+All points on this line are a combination of the tangency portfolio and the risk-free asset.  If the weight of the portfolio in the tangency portfolio is given as $y$ then the weight in the risk-free asset must be $1-y$.  The value of $y$ can be calculated for any desired expected return, $\bar{Z_{c}}$ on the CAL using this equation:
+
+$y=\frac{\bar{Z_c}-R}{\bar{Z_t}-R}$\\
+
+Using this y-value we can calculate the standard deviation at this point on the CAL:
+
+$\sigma_{c}= y\sigma_t$\\
+
+By combining these equations, we get the general equation for the CAL:
+
+$\bar{Z_c}=R+\left [ \frac{\bar{Z_t}-R}{\sigma_t} \right ]\sigma_c$\\
+
+\subsection{Example Calculation using Octave}
+
+As an example, let’s consider the four risky assets used in the efficient frontier examples in the previous posts.  The expected return vector and covariance matrix for these assets is given here:
+
+$\mathbf{\bar{z}}=\begin{bmatrix} 14\\ 12\\ 15\\ 7 \end{bmatrix}$\\
+
+$\mathbf{S}=\begin{bmatrix} 185& 86.5& 80& 20\\ 86.5& 196& 76& 13.5\\ 80& 76& 411& -19\\ 20& 13.5& -19& 25 \end{bmatrix}$\\
+
+The risk-free rate will be assumed to be 3\%, and the target return will be set to 14\%.
+
+If we implement the equations for the tangency portfolio and CAL in Octave/Matlab, we can calculate the portfolio weights for the tangency portfolio ($\mathbf{w_{t}}$), and the weight of the total portfolio which should be in the tangency portfolio ($y$) and the risk-free asset ($1-y$) to achieve the target expected return.
+
+The portfolio weights for the tangency portfolio are shown here:\\
+
+$\mathbf{w_{t}}=\begin{bmatrix} 0.1063\\ 0.0600\\ 0.1319\\ 0.7019 \end{bmatrix}$\\
+
+The weight in the tangency portfolio is:\\
+
+$y=1.804$\\
+
+Since this value is greater than 1, that means we have a short position in the risk-free asset with a weight of $1-y$ or -0.804.
+
+Note that this is a somewhat unrealistic scenario since we cannot borrow at the true risk-free rate.  In practice our borrowing rate would be higher, and the actual risk-free rate would be used only for portfolios where we had a positive weight in the risk-free asset.
+
+The plot of the efficient frontier, tangency portfolio, and the CAL are shown here:\\
+
+%\includegraphics[scale=0.4]{tangencyportfolio} % Just need to write the name of the file, no extension
+
+~\\
+
+\subsubsection{Octave/Matlab Code}
+
+This Octave/Matlab code will calculate and plot the efficient frontier, tangency portfolio and the CAL. The script can be modified for a different set of assets by updating the expected returns vector, the covariance matrix, the target return, and the risk free rate. The script will also work in Matlab.
+
+\lstset{language=Matlab}
+\begin{lstlisting}[frame=single]
+Matlab code
+\end{lstlisting}
+
+~\\
+\section{Bibliography and information}
+
+Bibliography
+
+\end{document}
