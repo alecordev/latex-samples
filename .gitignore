@@ -171,6 +171,7 @@ cython_debug/
 .pypirc
 
 temp/
+*aux
 *.pdf
 *.gz
 *.log
