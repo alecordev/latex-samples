@@ -1,0 +1,48 @@
+\documentclass[10pt,twocolumn]{article}
+
+% Packages
+\usepackage[a4paper,margin=1in]{geometry} % Adjust margins
+\usepackage{graphicx}                     % For including images
+\usepackage{amsmath,amssymb}              % For mathematical symbols
+\usepackage{hyperref}                     % For hyperlinks
+\usepackage{lipsum}                       % Dummy text for layout testing
+
+% Title, Author, and Date
+\title{A Minimal Two-Column Paper Template}
+\author{John Doe \\ \texttt{johndoe@example.com}}
+\date{\today}
+
+\begin{document}
+
+% Title
+\twocolumn[
+\maketitle
+\begin{abstract}
+This is a concise abstract summarizing the content of the paper. It provides the main points and contributions in a brief manner.
+\end{abstract}
+\vspace{1cm}
+]
+
+% Sections
+\section{Introduction}
+\lipsum[1] % Dummy text: replace with actual content.
+
+\section{Related Work}
+\lipsum[2] % Dummy text: replace with actual content.
+
+\section{Methodology}
+\lipsum[3] % Dummy text: replace with actual content.
+
+\section{Results and Discussion}
+\lipsum[4] % Dummy text: replace with actual content.
+
+\section{Conclusion}
+\lipsum[5] % Dummy text: replace with actual content.
+
+% Bibliography
+\begin{thebibliography}{99}
+\bibitem{example1} Author Name, \emph{Title of the Work}, Publisher, Year.
+\bibitem{example2} Author Name, \emph{Title of Another Work}, Journal Name, Volume, Year.
+\end{thebibliography}
+
+\end{document}

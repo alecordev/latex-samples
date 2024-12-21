@@ -1,10 +1,18 @@
 # Latex Samples
 
-Examples of latex documents.
+Latex snippets, examples.
 
-## Resources and Links
+## References
 
-- [LaTeX Wikibooks](https://en.wikibooks.org/wiki/LaTeX)
-- [Overleaf](https://www.overleaf.com/)
-- [Sharelatex](https://www.sharelatex.com/templates)
-- [Latex Templates](https://www.latextemplates.com/)
+- https://miktex.org/download
+- Texlive on Linux
+
+## Other templates
+
+- https://github.com/rpgtex/DND-5e-LaTeX-Template
+- https://github.com/NicklasVraa/LiX
+
+## Other Resources
+
+- https://github.com/cmichi/latex-template-collection
+- https://www.overleaf.com/latex/templates

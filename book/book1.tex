@@ -1,0 +1,66 @@
+\documentclass[12pt,twoside]{book}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{hyperref}
+
+% Page Style
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage} % Alternating page numbers
+\fancyhead[RE,LO]{\textit{\booktitle}} % Alternating header with book title
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Title and Chapter Formatting
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries}{}{0pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{50pt}{40pt}
+
+% Book Metadata Variables (to be replaced by Jinja2)
+\newcommand{\booktitle}{ The Art of Python } % Book Title
+\newcommand{\authorname}{ John Doe }
+
+% Hyperlinks Style
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+\begin{document}
+
+% Book Cover
+\begin{titlepage}
+    \begin{center}
+        \vspace*{2cm}
+        {\Huge\bfseries\booktitle}\\[1cm]
+        {\Large\textit{by}}\\[0.5cm]
+        {\Large\authorname}
+        \vfill
+        {\small\itshape Published by}\\
+        {\small\bfseries{ Tech Publishers }}
+        \vspace*{2cm}
+    \end{center}
+\end{titlepage}
+
+% Table of Contents
+\tableofcontents
+\newpage
+
+% Chapters
+\chapter{ Introduction }
+\begin{spacing}{1.5}
+Welcome to the world of Python.
+\end{spacing}
+\newpage
+\chapter{ Advanced Topics }
+\begin{spacing}{1.5}
+Explore advanced Python features.
+\end{spacing}
+\newpage
+
+\end{document}
